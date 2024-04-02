@@ -135,6 +135,20 @@ app.get("/user/:uid", async (req, res) => {
   }
 });
 
+app.post("/user", async (req, res) => {
+  const { user } = req.body;
+  try {
+    const existingUser = await User.findOne({ email: user.email });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
+    const newUser = await User.create({ ...user, available: true });
+    if (!newUser) return res.status(400).json({ message: "Please try again" });
+    res.status(200).json(newUser);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.put("/user/:uid", async (req, res) => {
   const { uid } = req.params;
   const { updateData } = req.body;
